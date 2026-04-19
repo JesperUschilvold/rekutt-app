@@ -96,6 +96,36 @@ export type Database = {
           },
         ]
       }
+      auth_attempts: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          ip_prefix: string | null
+          kind: string
+          success: boolean | null
+          tenant_slug: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          ip_prefix?: string | null
+          kind: string
+          success?: boolean | null
+          tenant_slug?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          ip_prefix?: string | null
+          kind?: string
+          success?: boolean | null
+          tenant_slug?: string | null
+        }
+        Relationships: []
+      }
       data_deletion_requests: {
         Row: {
           executed_at: string | null
@@ -638,6 +668,7 @@ export type Database = {
           scheduled_deletion_at: string | null
           start_date: string | null
           status: Database["public"]["Enums"]["user_status"] | null
+          suspended_until: string | null
           tenant_id: string
         }
         Insert: {
@@ -656,6 +687,7 @@ export type Database = {
           scheduled_deletion_at?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["user_status"] | null
+          suspended_until?: string | null
           tenant_id: string
         }
         Update: {
@@ -674,6 +706,7 @@ export type Database = {
           scheduled_deletion_at?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["user_status"] | null
+          suspended_until?: string | null
           tenant_id?: string
         }
         Relationships: [
@@ -698,6 +731,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      custom_access_token_hook: { Args: { event: Json }; Returns: Json }
+      get_user_context: {
+        Args: { p_email: string; p_tenant_slug: string }
+        Returns: {
+          full_name: string
+          role: Database["public"]["Enums"]["user_role"]
+          status: Database["public"]["Enums"]["user_status"]
+          tenant_id: string
+          user_id: string
+        }[]
+      }
       jwt_app_user_id: { Args: never; Returns: string }
       jwt_tenant_id: { Args: never; Returns: string }
       jwt_user_role: { Args: never; Returns: string }
