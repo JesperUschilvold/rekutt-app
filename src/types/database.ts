@@ -235,6 +235,8 @@ export type Database = {
           order_index: number | null
           phase: Database["public"]["Enums"]["module_phase"]
           published: boolean | null
+          requires_sign_off: boolean
+          risk_area_id: string | null
           slug: string
           title: string
           updated_at: string | null
@@ -249,6 +251,8 @@ export type Database = {
           order_index?: number | null
           phase: Database["public"]["Enums"]["module_phase"]
           published?: boolean | null
+          requires_sign_off?: boolean
+          risk_area_id?: string | null
           slug: string
           title: string
           updated_at?: string | null
@@ -263,17 +267,28 @@ export type Database = {
           order_index?: number | null
           phase?: Database["public"]["Enums"]["module_phase"]
           published?: boolean | null
+          requires_sign_off?: boolean
+          risk_area_id?: string | null
           slug?: string
           title?: string
           updated_at?: string | null
           version?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "modules_risk_area_id_fkey"
+            columns: ["risk_area_id"]
+            isOneToOne: false
+            referencedRelation: "risk_areas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       onboarding_tracks: {
         Row: {
           created_at: string | null
           id: string
+          is_default: boolean
           name: string
           role_target: string | null
           tenant_id: string
@@ -281,6 +296,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          is_default?: boolean
           name: string
           role_target?: string | null
           tenant_id: string
@@ -288,6 +304,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          is_default?: boolean
           name?: string
           role_target?: string | null
           tenant_id?: string
@@ -295,6 +312,80 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "onboarding_tracks_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      procedures: {
+        Row: {
+          archived_at: string | null
+          body_md: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_current: boolean
+          risk_area_id: string | null
+          supersedes_id: string | null
+          tenant_id: string
+          title: string
+          updated_at: string | null
+          version: number
+        }
+        Insert: {
+          archived_at?: string | null
+          body_md?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_current?: boolean
+          risk_area_id?: string | null
+          supersedes_id?: string | null
+          tenant_id: string
+          title: string
+          updated_at?: string | null
+          version?: number
+        }
+        Update: {
+          archived_at?: string | null
+          body_md?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_current?: boolean
+          risk_area_id?: string | null
+          supersedes_id?: string | null
+          tenant_id?: string
+          title?: string
+          updated_at?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procedures_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procedures_risk_area_id_fkey"
+            columns: ["risk_area_id"]
+            isOneToOne: false
+            referencedRelation: "risk_areas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procedures_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "procedures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procedures_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -373,6 +464,33 @@ export type Database = {
           },
         ]
       }
+      risk_areas: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          order_index: number | null
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          slug?: string
+        }
+        Relationships: []
+      }
       section_completions: {
         Row: {
           attempts: number | null
@@ -428,6 +546,68 @@ export type Database = {
           },
           {
             foreignKeyName: "section_completions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sign_offs: {
+        Row: {
+          id: string
+          module_id: string
+          note: string | null
+          signed_at: string | null
+          signed_by: string | null
+          signer_email_snap: string | null
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          module_id: string
+          note?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          signer_email_snap?: string | null
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          module_id?: string
+          note?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          signer_email_snap?: string | null
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sign_offs_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sign_offs_signed_by_fkey"
+            columns: ["signed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sign_offs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sign_offs_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -750,7 +930,7 @@ export type Database = {
       deletion_status: "scheduled" | "cancelled" | "executed"
       module_phase: "for_forste_vakt" | "forste_uke" | "fortlopende"
       section_kind: "intro" | "content" | "scenario" | "quiz" | "reflection"
-      user_role: "admin" | "ansatt"
+      user_role: "admin" | "veileder" | "ansatt"
       user_status: "invited" | "active" | "suspended" | "deleted_soft"
     }
     CompositeTypes: {
@@ -885,7 +1065,7 @@ export const Constants = {
       deletion_status: ["scheduled", "cancelled", "executed"],
       module_phase: ["for_forste_vakt", "forste_uke", "fortlopende"],
       section_kind: ["intro", "content", "scenario", "quiz", "reflection"],
-      user_role: ["admin", "ansatt"],
+      user_role: ["admin", "veileder", "ansatt"],
       user_status: ["invited", "active", "suspended", "deleted_soft"],
     },
   },
